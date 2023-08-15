@@ -1,10 +1,12 @@
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
+from typing import Tuple
+
 
 class SPIDER():
-
-    def __init__(self, amplification_type):
+    def __init__(self, amplification_type: str):
         self.amplification_type = amplification_type
+
 
     def classify_examples(self, X: np.ndarray, Y: np.ndarray, k: int = 3) -> np.ndarray:
         """
@@ -43,21 +45,22 @@ class SPIDER():
         return flags
 
 
-    def find_knn_indices(self, k, majority_class, example, safe_noisy_class, flags, Y, X):
+    def find_knn_indices(self, k: int, majority_class: int, example: np.ndarray, safe_noisy_class: int,
+                         flags: np.ndarray, Y: np.ndarray, X: np.ndarray) -> np.ndarray:
         """
         Find the indices of the safe examples among its k nearest neigbors.
 
         Args:
             k (int): The number of nearest neigbors to consider.
             majority_class (int): The label of the majority class.
-            example (np.ndarray): The example for which to find the nearest neigbors.
+            example (numpy.ndarray): The example for which to find the nearest neigbors.
             safe_noisy_class (int): The class type (0 for safe, 1 for noisy) to consider.
-            flags (np.ndarray): The flags indicating the type of each example (0 for safe, 1 for noisy).
-            Y (np.ndarray): The target labels of shape (n_samples,)
-            X (np.ndarray): The feature matrix of shape (n_samples, n_features).
+            flags (numpy.ndarray): The flags indicating the type of each example (0 for safe, 1 for noisy).
+            Y (numpy.ndarray): The target labels of shape (n_samples,)
+            X (numpy.ndarray): The feature matrix of shape (n_samples, n_features).
 
         Returns:
-            np.ndarray: The indices of the safe examples among its k nearest neigbors.
+            numpy.ndarray: The indices of the safe examples among its k nearest neigbors.
         """
         # Find the indices of the safe examples among its k nearest neigbors
         safe_indices = np.where((flags == safe_noisy_class) & (Y == majority_class))[0]
@@ -79,7 +82,7 @@ class SPIDER():
         return knn_indices[:k]
 
 
-    def weak_amplification(self, X: np.ndarray, Y: np.ndarray, flags: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def weak_amplification(self, X: np.ndarray, Y: np.ndarray, flags: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         Performs weak amplification by creating copies of noisy examples.
 
@@ -117,17 +120,18 @@ class SPIDER():
         return new_X, new_Y, flags_new
 
 
-    def weak_amplification_and_relabeling(self, X: np.ndarray, y: np.ndarray, flags: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def weak_amplification_and_relabeling(self, X: np.ndarray, y: np.ndarray, flags: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         Perform weak amplification and relabeling by creating copies of noisy examples and relabeling their nearest noisy neighbors.
 
         Args:
-            X (np.ndarray): The feature matrix of shape (n_samples, n_features).
-            y (np.ndarray): The target labels of shape (n_samples,).
-            flags (np.ndarray): The flags indicating the type of each example (0 for safe, 1 for noisy).
+            X (numpy.ndarray): The feature matrix of shape (n_samples, n_features).
+            y (numpy.ndarray): The target labels of shape (n_samples,).
+            flags (numpy.ndarray): The flags indicating the type of each example (0 for safe, 1 for noisy).
 
         Returns:
-            tuple[np.ndarray, np.ndarray]: The updated feature matrix after amplification and relabeling, and the updated target labels after amplification and relabeling.
+            tuple[numpy.ndarray, numpy.ndarray]: The updated feature matrix after amplification and relabeling, 
+                                                 and the updated target labels after amplification and relabeling.
         """
         # Get the number of samples in the feature matrix X
         n_samples = X.shape[0]
@@ -175,17 +179,18 @@ class SPIDER():
         return new_X, new_y, flags_new
 
 
-    def strong_amplification(self, X: np.ndarray, y: np.ndarray, flags: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def strong_amplification(self, X: np.ndarray, y: np.ndarray, flags: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         Perform strong amplification by creating copies of safe and noisy examples, and remove all noisy majority class examples.
 
         Args:
-            X (np.ndarray): The feature matrix of shape (n_samples, n_features).
-            y (np.ndarray): The target labels of shape (n_samples,).
-            flags (np.ndarray): The flags indicating the type of each example (0 for safe, 1 for noisy).
+            X (numpy.ndarray): The feature matrix of shape (n_samples, n_features).
+            y (numpy.ndarray): The target labels of shape (n_samples,).
+            flags (numpy.ndarray): The flags indicating the type of each example (0 for safe, 1 for noisy).
 
         Returns:
-            tuple[np.ndarray, np.ndarray]: The updated feature matrix after amplification, and the updated target labels after amplification.
+            tuple[numpy.ndarray, np.ndarray]: The updated feature matrix after amplification, 
+                                                and the updated target labels after amplification.
         """
         # Get the number of samples in the feature matrix X
         n_samples = X.shape[0]
@@ -252,7 +257,19 @@ class SPIDER():
         return new_X, new_y, flags_new
 
 
-    def fit_resample(self, X, y):
+    def fit_resample(self, X: np.ndarray, y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Calls the appropriate preprocessing function depending on the type of amplification selected.
+        Remove noisy samples from majority class.
+        
+        Args:
+            X (numpy.ndarray): The feature matrix of shape (n_samples, n_features).
+            y (numpy.ndarray): The target labels of shape (n_samples,).
+
+        Returns:
+            tuple[numpy.ndarray, numpy.ndarray]: The updated feature matrix,
+                                                and the updated target labels after preprocessing.
+        """
         majority_class_label = np.argmax(np.bincount(y))
         flags = self.classify_examples(X, y)
         if self.amplification_type == 'week_amplification':
@@ -261,6 +278,7 @@ class SPIDER():
             new_X, new_y, new_flags = self.weak_amplification_and_relabeling(X, y, flags)
         else:
             new_X, new_y, new_flags = self.strong_amplification(X, y, flags)
+            
         # Remove all noisy majority class examples from new_X, new_y, and flags_new arrays
         new_X = new_X[~((new_flags == 1) & (new_y == majority_class_label))]
         new_y = new_y[~((new_flags == 1) & (new_y == majority_class_label))]
