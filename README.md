@@ -6,12 +6,17 @@ The algorithm was implemented on the basis of publication [1].
 
 
 ## Installation
-To use Spider, you can clone the repository:
+To use SPIDER, you can clone the repository:
 
 ```bash
 git clone https://github.com/Rol3ert99/Spider.git
-cd spider
+cd Spider
 ```
+Once you have cloned the repository and navigated to the "Spider" directory, you can install SPIDER using pip:
+```bash
+pip install .
+```
+This command will install the Spider package, allowing you to import and use the SPIDER class in your Python scripts.
 
 
 ## Usage
@@ -64,9 +69,10 @@ new_X, new_y = sp2.fit_resample(X, y)
 
 
 ## Running Tests
+Assume that pip Spider package is installed.
 To run tests for Spider, navigate to the project directory and execute:
 ```bash
-python spider_tests.ipynb
+python test.py
 ```
 
 
