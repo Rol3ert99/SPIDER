@@ -1,0 +1,11 @@
+README.md
+setup.py
+Spider/__init__.py
+Spider/main_class.py
+Spider.egg-info/PKG-INFO
+Spider.egg-info/SOURCES.txt
+Spider.egg-info/dependency_links.txt
+Spider.egg-info/requires.txt
+Spider.egg-info/top_level.txt
+tests/__init__.py
+tests/test.py
