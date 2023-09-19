@@ -75,6 +75,23 @@ To run tests for Spider, navigate to the project directory and execute:
 python test.py
 ```
 
+## Experiments
+In the experiments directory, there is a PDF document presenting the classification results using the SPIDER preprocessing. These results are compared with those obtained using the SMOTE preprocessing, as well as classifications without any preprocessing.
+
+Three different classifiers were used for the classification experiments. All classifications were conducted using cross-validation, ensuring accuracy and reliability of the results obtained.
+
+All the results, tables, statistical tests, and charts were generated using the research_loop script.
+
+To replicate the results, place 14 datasets in the datasets directory from the KEEL website (keel.es) in CSV format.
+
+Additionally, the tables are output to the terminal in a specific manner that makes it easy to use them in LaTeX. This ensures seamless integration of the results into LaTeX documents without the need for further formatting.
+
+We encourage you to delve into the detailed results and analysis of the conducted tests to better understand the efficacy and capabilities of the SPIDER algorithm in the context of data processing.
+
+This addition makes it clear to users that the output is tailored for easy LaTeX integration.
+
+
+
 
 ## Publication
 For more details on the Spider algorithm, you can refer to the following publication:  
